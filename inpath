@@ -1,0 +1,50 @@
+#!/bin/bash
+# inpath--특정 프로그램이 유효한지
+# 또는 PATH 디렉터리 목록에서 찾을 수 있는지 확인한다.
+
+in_path()
+{
+# 주어진 명령어와 PATH로 명령어를 찾는다. 발견돼 실행 가능하면 0을 리턴하고 만약 그렇지 않다면 1을 리턴한다. 이것은 일싲거으로 IFS(내부 필드 분리 기호)를 수정하지만, 완료후 복원한다.
+	
+	cmd=$1		ourpath=$2	result=1
+	oldIFS=$IFS	IFS=":"
+
+	for directory in "$ourpath"
+	do
+		if [ -x $directory/$cmd ] ; then
+			result=0
+		fi
+	done
+
+	IFS=$olfIFS
+	return $result
+}
+
+checkForCmdInPath()
+{
+	var=$1
+
+	if [ "$var" != "" ] ; then
+		if [ "{$var:0:1}" = "/" ] ; then
+			if [ ! -x $var ] ; then
+				return 1
+			fi
+		elif ! in_path $var "$PATH" ; then
+			return 2
+		fi
+	fi
+}
+
+#if [ $# -ne 1 ] ; then
+#	echo "Usage: $0 command" >&2
+#	exit 1
+#fi
+#
+#checkForCmdInPath "$1"
+#case $? in
+#	0 ) echo "$1 found in PATH"					;;
+#	1 ) echo "$1 not found or not executable"	;;
+#	2 ) echo "$1 not found in PATH"				;;
+#esac
+#
+#exit 0
