@@ -1,0 +1,3 @@
+# C파일 include 경로를 바꾼다.
+# ex) #include "../includes/libft.h" -> #include "libft.h" 로 모든 C파일에서 바꾸고 싶을 때
+sed -i '' 's/\"\.\.\/includes\/libft\.h\"/\"libft\.h\"/g' *.c
