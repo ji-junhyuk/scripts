@@ -1,0 +1,63 @@
+#!/bin/bash
+# nicenumber : 주어진 숫자를 쉼표로 구분된 형식으로 표시한다.
+# (decimal point delimiter - 소수점 구분 기호) 및 TD(thousand delimiter - 천 단위 구분 기호)가 인스턴스화 될 것으로 예상된다.
+# nicenum을 인스턴스화 하거나 두 번째 arg가 지정되면 출력이 stdout으로 보내진다.
+
+nicenumber()
+{
+#	separator="$(echo $1 | sed 's/[[:digit:]]//g')"
+#	if [ ! -z "$separator" -a "$separator" != "$DD" ] ; then
+#		echo "$0: Unknown decimal separator $separator encountered." >&2
+#		exit 1
+#	fi
+#	integer=$(echo $1 | "cut -d$DD" -f1)
+#	decimal=$(echo $1 | "cut -d$DD" -f2)
+	integer=$(echo $1 | cut -d. -f1)
+	decimal=$(echo $1 | cut -d. -f2)
+
+	if [ "$decimal" != "$1" ]; then
+		result="${DD:= '.'}$decimal"
+	fi
+
+	thousands=$integer
+
+	while [ $thousands -gt 999 ]; do
+		remainder=$(($thousands % 1000))
+
+		while [ ${#remainder} -lt 3 ] ; do
+			remainder="0$remainder"
+		done
+
+		result="${TD:=","}${remainder}${result}"
+		thousands=$(($thousands / 1000))
+	done
+
+	nicenum="${thousands}${result}"
+	if [ ! -z $2 ] ; then
+		echo $nicenum
+	fi
+}
+
+DD="."
+TD=","
+
+# Main script
+#============
+while getopts "d:t:" opt; do
+	case $opt in
+		d ) DD="$OPTARG"	;;
+		t ) TD="$OPTARG"	;;
+	esac
+done
+shift $(($OPTIND - 1))
+
+if [ $# -eq 0 ] ; then
+	echo "Usage: $(basename $0) [-d c] [-t c] number"
+	echo "	-d specifies the decimal point delimiter"
+	echo "	-t specifies the thousands delimiter"
+	exit 0
+fi
+
+nicenumber $1 1
+
+exit 0
