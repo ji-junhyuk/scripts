@@ -1,0 +1,46 @@
+#!/bin/bash
+# validint 음수인 정수를 허용하면서 정수 입력을 검증
+
+validint()
+{
+	# 첫 번째 필드의 유효성을 검사하고 최솟값 $ 2
+	# 그리고 / 또는 최대값 $3이 제공되면 해당 값을 테스트한다.
+	# 값이 범위 내가 아니거나 숫자만으로 구성되지 않은 경우에는 실패한다.
+	number="$1";	min="$2";	max="$3"
+
+	if [ -z $number ] ; then
+		echo "You didn't enter anything. Please enter a number." >&2
+		return 1
+	fi
+
+	if [ "${number%${number#?}}" = "-" ] ; then
+		testvalue="${number#?}"
+	else
+		testvalue="$number"
+	fi
+
+	nodigits="$(echo $testvalue | sed 's/[[:digit:]]//g')"
+
+	if [ ! -z $nodigits ] ; then
+		echo "Invalid number format! Only digits, no commas, space, etc." >&2
+		return 1
+	fi
+
+	if [ ! -z $min ] ; then
+		if [ "$number" -lt "$min" ] ; then
+			echo "Your value is too small; smallest acceptable value is $min." >&2
+			return 1
+		fi
+	fi
+	if [ ! -z $max ] ; then
+		if [ "$number" -gt "$max" ] ; then
+			echo "Your value is too big: largest acceptable value is $max." >&2
+			return 1
+		fi
+	fi
+	return 0
+}
+
+	if validint "$1" "$2" "$3" ; then
+		echo "Input is a valid integer within your constraints."
+	fi
