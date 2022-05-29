@@ -1,0 +1,6 @@
+#!/bin/bash
+echon()
+{
+#	echo "$*" | awk '{ print "%s", $0 }'
+	echo "$*" | tr -d '\n'
+}
