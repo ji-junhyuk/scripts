@@ -1,0 +1,8 @@
+#!/bin/bash
+
+: ${GROFF_BIN_PATH=/usr/bin}
+PATH=$GROFF_BIN_PATH:$PATH
+export PATH
+exec eqn -Tascii ${1+ "$@"}
+
+# eof
