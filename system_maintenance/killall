@@ -1,0 +1,53 @@
+#!/bin/bash
+
+signal="-INT"
+user=""   tty=""   donothing=0
+
+while getopts "s:u:t:n" opt; do
+	case "$opt" in
+	s ) signal="-$OPTARG";              ;;
+	u ) if [ ! -z "$tty" ] ; then
+			echo "$0: error: -u and -t are mutually exclusive." >&2
+			exit 1
+		fi
+		user=$OPTARG;                  ;;
+	t ) if [ ! -z "$user" ] ; then
+			echo "$0: error: -u and -t are mutually exclusive." >&2
+			exit 1
+		fi
+		tty=$2;                        ;;
+	n ) donothing=1;                    ;;
+    ? ) echo "Usage: $0 [-s signal] [-u user|-t tty] [-n] pattern" >&2
+        exit 1
+	esac
+done
+
+shift $(( $OPTIND - 1 ))
+
+if [ $# -eq 0 ] ; then
+	echo "Usage: $0 [-s signal] [-u user|-t tty] [-n] pattern" >&2
+	exit 1
+fi
+
+if [ ! -z "$tty" ] ; then
+	pids=$(ps cu -t $tty | awk "/ $1$/ { print \$2 }")
+elif [ ! -z "$user" ] ; then
+	pids=$(ps cu -U $user | awk "/ $1$/ { print \$2 }")
+else
+	pids=$(ps cu -U ${USER:-LOGNAME} | awk "/ $1$/ { print \$2 }")
+fi
+
+if [ -z "$pids" ] ; then
+	echo "$0: no processes match pattern $1" >&2; exit 1
+fi
+
+for pid in $pids
+do
+	if [ $donothing -eq 1 ] ; then
+		echo "kill $signal $pid"   # the –n flag: "show me, but don't do it"
+	else
+		kill $signal $pid
+	fi
+done
+
+exit 0

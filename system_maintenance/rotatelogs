@@ -1,0 +1,69 @@
+#!/bin/bash
+
+logdir="/var/log"
+config="$logdir/rotatelogs.conf"
+mv="/bin/mv"
+default_duration=7
+count=0
+
+duration=$default_duration
+
+if [ ! -f $config ] ; then
+	echo "$0: no config file found. Can't proceed." >&2; exit 1
+fi
+
+if [ ! -w $logdir -o ! -x $logdir ] ; then
+	echo "$0: you don't have the appropriate permissions in $logdir" >&2
+	exit 1
+fi
+
+cd $logdir
+
+for name in $(find . -maxdepth 1 -type f -size +0c ! -name '*[0-9]*' \
+     ! -name '\.*' ! -name '*conf' -print | sed 's/^\.\///')
+do
+	count=$(( $count + 1 ))
+
+	duration="$(grep "^${name}=" $config|cut -d= -f2)"   
+
+	if [ -z "$duration" ] ; then 
+		duration=$default_duration  
+	elif [ "$duration" = "0" ] ; then
+		echo "Duration set to zero: skipping $name"
+		continue
+	fi
+
+  back1="${name}.1"; back2="${name}.2";
+  back3="${name}.3"; back4="${name}.4";
+
+  if [ -f "$back1" ] ; then
+	  if [ -z "$(find \"$back1\" -mtime +$duration -print 2>/dev/null)" ]
+	  then
+		  echo -n "$name's most recent backup is more recent than $duration "
+		  echo "days: skipping" ;   continue
+	  fi
+  fi
+
+  echo "Rotating log $name (using a $duration day schedule)"
+
+  if [ -f "$back3" ] ; then
+	  echo "... $back3 -> $back4" ; $mv -f "$back3" "$back4"
+  fi
+  if [ -f "$back2" ] ; then
+	  echo "... $back2 -> $back3" ; $mv -f "$back2" "$back3"
+  fi
+  if [ -f "$back1" ] ; then
+	  echo "... $back1 -> $back2" ; $mv -f "$back1" "$back2"
+  fi
+  if [ -f "$name" ] ; then
+	  echo "... $name -> $back1" ; $mv -f "$name" "$back1"
+  fi
+  touch "$name"
+  chmod 0600 "$name"    
+done
+
+if [ $count -eq 0 ] ; then
+	echo "Nothing to do: no log files big enough or old enough to rotate"
+fi
+
+exit 0
