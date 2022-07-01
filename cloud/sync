@@ -1,0 +1,46 @@
+#!/bin/bash
+
+name=”synconedrive”
+onedrive="$HOME/OneDrive"
+sourcedir=""
+targetdir="sync"
+
+
+if [ $# -eq 0 ] ; then
+  echo "Usage: $0 [-d source-folder] {file, file, file}" >&2 ; exit 1
+fi 
+
+if [ "$1" = "-d" ] ; then
+  sourcedir="$2"
+  shift; shift
+fi
+
+if [ ! -z "$sourcedir" -a $# -ne 0 ] ; then
+  echo "$name: you can't specify both a directory and specific files." >&2 ; exit 1
+fi
+
+if [ ! -z "$sourcedir" ] ; then
+  if [ ! -d "$sourcedir" ] ; then
+    echo "$name: please specify a source directory with -d" >&2 ; exit 1
+  fi
+fi
+
+if [ ! -z "$sourcedir" ] ; then
+ if [ -f "$onedrive/$sourcedir" -o -d "$onedrive/$sourcedir" ] ; then
+    echo "$name: specified source directory $sourcedir already exists in $onedrive" >&2 ; exit 1
+  fi
+
+  echo "Copying contents of $sourcedir to $onedrive..."
+  cp -a "$sourcedir" $onedrive		
+else
+  if [ ! -d "$onedrive/$targetdir" ] ; then
+    mkdir "$onedrive/$targetdir"
+    if [ $? -ne 0 ] ; then
+      echo "$name: Error encountered during mkdir $onedrive/$targetdir" >&2 ; exit 1
+    fi
+  fi
+    
+ cp -p -v $@ "$onedrive/$targetdir"
+fi
+
+exec onedrive -s
