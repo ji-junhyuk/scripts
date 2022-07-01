@@ -1,0 +1,10 @@
+#!/bin/bash
+
+testit="$(echo $@ | sed 's/[^[:alpha:]]//g' | tr '[:upper:]' '[:lower:]')"
+backword="$(echo $testit | rev)"
+
+if [ "$testit" = "$backword" ] ; then
+	echo "$@ is a palindrome"
+else
+	echo "$@ is not a palindrome"
+fi
