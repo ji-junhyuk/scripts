@@ -1,0 +1,32 @@
+#!/bin/sh
+
+if [ $# -eq 0 ] ; then
+	thedate="today"
+else
+	mon="$(echo $1 | cut -d/ -f1)"
+	day="$(echo $1 | cut -d/ -f2)"
+	year="$(echo $1 | cut -d/ -f3)"
+
+	if [ -z "$year" -o -z "$day" ] ; then	    # zero length?
+		echo "Error: only valid date format is MM/DD/YYYY"
+		exit 1
+  	fi
+  
+  thedate="$1"
+fi
+
+echo checking moon phase for day = $thedate
+
+url="http://www.moongiant.com/phase/$thedate"
+pattern="Illumination:"
+
+phase="$( curl -s "$url" | grep "$pattern" | tr ',' '\
+' | grep "$pattern" | sed 's/[^0-9]//g')"
+
+if [ "$thedate" = "today" ] ; then
+	echo "Today the moon is ${phase}% illuminated."
+else
+  	echo "On $thedate the moon = ${phase}% illuminated."
+fi
+
+exit 0
