@@ -28,26 +28,27 @@ echo -e "${blue}\nHome folder:${reset}"
 du -hd1 . 2>/dev/null | sort -h | grep --color=always "[0-9]*\.*[0-9]*M\t\|[0-9]*\.*[0-9]*G\t\|$"
 echo ""
 
-function delete() {
-	read -n1 -p "${blue}Delete ${cyan}$1${blue} ? [y/${cyan}N${blue}]${reset} " input
-	echo ""
-	if [ -n "$input" ] && [ "$input" = "y" ]; then
-		rm -rf "$1"
-	fi
-}
+#function delete() {
+#	read -n1 -p "${blue}Delete ${cyan}$1${blue} ? [y/${cyan}N${blue}]${reset} " input
+#	echo ""
+#	if [ -n "$input" ] && [ "$input" = "y" ]; then
+#		rm -rf "$1"
+#	fi
+#}
 
 # Delete heavy files/folders
-delete "./Downloads/*"
-delete "./.Trash/*"
-delete "./.cache/*"
-delete "./Library/Caches/*"
-delete "./Library/Containers/com.docker.docker/*"
-delete "./Library/Containers/*"
-delete "./Library/Application Support/Code/User/*"
-delete "./Library/Application Support/Code/CachedData/*"
-delete "./Library/Application Support/Slack/Service Worker/CacheStorage/*"
-delete "./Library/Application Support/discord/Cache/*"
-delete "./Library/Developer/CoreSimulator/*"
+rm -rf "./Downloads/*"
+rm -rf "./.Trash/*"
+rm -rf "./.cache/*"
+rm -rf "./Library/Caches/*"
+rm -rf "./Library/Containers/com.docker.docker/*"
+rm -rf "./Library/Containers/*"
+rm -rf "./Library/Application Support/Code/User/*"
+rm -rf "./Library/Application Support/Code/CachedData/*"
+rm -rf "./Library/Application Support/Slack/Service Worker/CacheStorage/*"
+rm -rf "./Library/Application Support/discord/Cache/*"
+rm -rf "./Library/Developer/CoreSimulator/*"
+rm -r ~/Library/Caches/*; rm ~/.zcompdump*; brew cleanup // Library 캐쉬 지우기
 
 # Brew cleanup
 read -n1 -p "${blue}Cleanup Homebrew? (${cyan}brew cleanup${blue}) [y/${cyan}N${blue}]${reset} " input
