@@ -51,11 +51,11 @@ rm -rf "./Library/Developer/CoreSimulator/*"
 rm -r ~/Library/Caches/*; rm ~/.zcompdump*; brew cleanup // Library 캐쉬 지우기
 
 # Brew cleanup
-read -n1 -p "${blue}Cleanup Homebrew? (${cyan}brew cleanup${blue}) [y/${cyan}N${blue}]${reset} " input
-echo ""
-if [ -n "$input" ] && [ "$input" = "y" ]; then
-	brew cleanup ;:
-fi
+#read -n1 -p "${blue}Cleanup Homebrew? (${cyan}brew cleanup${blue}) [y/${cyan}N${blue}]${reset} " input
+#echo ""
+#if [ -n "$input" ] && [ "$input" = "y" ]; then
+#	brew cleanup ;:
+#fi
 
 # Show before/after
 echo -e "${blue}\nSpace before:\n${reset}${initial_df}${blue}\n\nSpace after:${reset}"
