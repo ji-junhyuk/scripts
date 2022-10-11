@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ls | grep '.c' | cut -d . -f 1 | while read line; do mv $line.c $line\_bonus.c; done
