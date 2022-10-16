@@ -1,0 +1,2 @@
+find . -maxdepth 3 -name "*.c" -exec cat {} \; | grep -A 15 "ft_hook"
+find . \( -name "*.c" -o -name "*.h" \) -exec cat {} \;| grep -A 15 "mlx_settings_t"
